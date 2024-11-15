@@ -6,62 +6,58 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  sonar:
-    name: SonarQube Scan
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: Set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: '17'
-      - name: Cache Maven packages
-        uses: actions/cache@v1
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Run SonarQube scan
-        run: mvn sonar:sonar -Dsonar.projectKey=my_project_key -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-  build:
-    # Depends on sonar's job
-    needs: sonar
-    name: Build
-    # Run on Ubuntu using the latest version
-    runs-on: ubuntu-latest
-    steps:
-      # Check-out your repository under $GITHUB_WORKSPACE, so your workflow can access it
-      - uses: actions/checkout@v4
+    sonar:
+      name: SonarQube Scan
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
 
-      # Set up JDK 17
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
+        - name: Set up JDK
+          uses: actions/setup-java@v4
+          with:
+            java-version: '17'
 
-      # Set up Maven cache
-      - name: Cache Maven packages
-        # This action allows caching dependencies and build outputs to improve workflow execution time.
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+        - name: Cache Maven packages
+          uses: actions/cache@v4
+          with:
+            path: ~/.m2
+            key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+            restore-keys: ${{ runner.os }}-m2
 
-      # Build the application using Maven
-      - name: Build with Maven
-        run: mvn -B package -DskipTests --file pom.xml
+        # Compile the project before running SonarQube analysis
+        - name: Build with Maven
+          run: mvn -B compile
 
-      # Upload the JAR artifact
-      - name: Upload JAR
-        uses: actions/upload-artifact@v3
-        with:
-          # Set artifact name
-          name: artifact
-          # From this path
-          path: target/lab2-0.0.1-SNAPSHOT.jar
+        # Run SonarQube scan
+        - name: Run SonarQube scan
+          run: mvn sonar:sonar -Dsonar.projectKey=DuserQ_Lab2ASW-udea -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+    build:
+      needs: sonar
+      name: Build
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - name: Set up JDK
+          uses: actions/setup-java@v4
+          with:
+            java-version: '17'
+        - name: Cache Maven packages
+          uses: actions/cache@v4
+          with:
+            path: ~/.m2
+            key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+            restore-keys: ${{ runner.os }}-m2
+        - name: Build with Maven
+          run: mvn -B package -DskipTests --file pom.xml
+        - name: Upload JAR
+          uses: actions/upload-artifact@v3
+          with:
+            name: artifact
+            path: target/lab2-0.0.1-SNAPSHOT.jar
   # Test's job
-  tests:
+
+tests:
     name: Unit tests
     # Run on Ubuntu using the latest version
     runs-on: ubuntu-latest
