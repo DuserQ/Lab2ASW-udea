@@ -4,7 +4,7 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DuserQ_Lab2ASW-udea&metric=coverage)](https://sonarcloud.io/summary/new_code?id=DuserQ_Lab2ASW-udea)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=DuserQ_Lab2ASW-udea&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=DuserQ_Lab2ASW-udea)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=DuserQ_Lab2ASW-udea&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=DuserQ_Lab2ASW-udea)
-
+[![Known Vulnerabilities](https://snyk.io/test/github/DuserQ/Lab2ASW-udea/badge.svg)](https://snyk.io/test/github/DuserQ/Lab2ASW-udea)
 Implementation of a Simple App with the next operations:
 * Get random nations
 * Get random currencies
